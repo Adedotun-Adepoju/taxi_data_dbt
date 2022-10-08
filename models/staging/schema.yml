@@ -8,3 +8,30 @@ sources:
       tables:
         - name: external_yellow_partitioned
         - name: external_green_partitioned
+
+models:
+  - name: stg_green_tripdata
+    description: >
+      Trip made by green taxis, also known as boro taxis and street-hail liveries.
+      Green taxis may respond to street hails, but only in the areas indicated in gren on the map (i.e above W 110 St/E 96th St in Manhattan and in the boroughs).
+      The records were collected and provided to the NYC Taxi and Linousine Commission (TLC) by technology service providers.
+    columns: 
+      - name: tripid
+        description: Primary key for this table, generated with a concatenation of vendorid+pickup_datetime
+        tests:
+          - unique:
+             severity: warn
+          - not_null:
+             severity: warn
+      - name: VendorID
+        description: >
+          A code indicating the TPEP provider that provided the recor.
+          1= Creative mobile technologies, LLC;
+          2= Verifone Inc.
+      - name: Pickup_locationid
+        description: locationid where the meter was engaged.
+        tests:
+          - relationships:
+              to: ref('taxi_zone_lookup')
+              field: locationid
+              severity: warn
